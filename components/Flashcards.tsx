@@ -16,8 +16,14 @@ const Flashcards: React.FC<FlashcardsProps> = ({ onComplete }) => {
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
-        // Initialize Gemini client with direct process.env.API_KEY access
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        // Safe access to API Key for different environments
+        const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : undefined;
+        
+        if (!apiKey) {
+          throw new Error("API Key not found");
+        }
+
+        const ai = new GoogleGenAI({ apiKey });
         const response = await ai.models.generateContent({
           model: 'gemini-3-flash-preview',
           contents: "Generate 5 interesting Christmas trivia flashcards. Each should have a 'front' (the topic/item) and a 'back' (a cool fact).",
@@ -38,17 +44,15 @@ const Flashcards: React.FC<FlashcardsProps> = ({ onComplete }) => {
           }
         });
 
-        // Use the .text property getter as per guidelines
         const textOutput = response.text;
         if (textOutput) {
           const data = JSON.parse(textOutput);
           setCards(data);
         } else {
-          throw new Error("Empty response from AI");
+          throw new Error("Empty response");
         }
       } catch (error) {
-        console.error("Failed to load flashcards", error);
-        // Fallback cards if API fails or quota exceeded
+        console.error("Flashcards fallback triggered:", error);
         setCards([
           { id: 1, front: "Reindeer", back: "Reindeer are the only deer species where both males and females grow antlers." },
           { id: 2, front: "Christmas Trees", back: "The first artificial Christmas trees were made in Germany using goose feathers dyed green." },
@@ -77,7 +81,7 @@ const Flashcards: React.FC<FlashcardsProps> = ({ onComplete }) => {
     return (
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-white pixel-font">
         <div className="text-4xl animate-spin mb-4">🌟</div>
-        <p>GENERATING TRIVIA...</p>
+        <p className="text-sm">GENERATING TRIVIA...</p>
       </div>
     );
   }
@@ -98,7 +102,7 @@ const Flashcards: React.FC<FlashcardsProps> = ({ onComplete }) => {
              <div className="text-center">
                 <p className="text-xs text-slate-400 mb-2 pixel-font">TOPIC</p>
                 <h3 className="text-2xl text-slate-900 pixel-font">{currentCard?.front}</h3>
-                <p className="mt-8 text-[8px] text-slate-400 pixel-font animate-pulse">CLICK TO FLIP</p>
+                <p className="mt-8 text-[8px] text-slate-400 pixel-font animate-pulse uppercase">Click to flip</p>
              </div>
           </div>
           
@@ -117,7 +121,7 @@ const Flashcards: React.FC<FlashcardsProps> = ({ onComplete }) => {
         <button 
           onClick={handleNext}
           disabled={!isFlipped}
-          className={`px-8 py-3 rounded pixel-font transition-all ${isFlipped ? 'bg-yellow-500 hover:bg-yellow-400 text-slate-900' : 'bg-slate-700 text-slate-500 opacity-50'}`}
+          className={`px-8 py-3 rounded pixel-font transition-all ${isFlipped ? 'bg-yellow-500 hover:bg-yellow-400 text-slate-900' : 'bg-slate-700 text-slate-500 opacity-50 cursor-not-allowed'}`}
         >
           {currentIndex === cards.length - 1 ? 'FINISH' : 'NEXT CARD'}
         </button>
