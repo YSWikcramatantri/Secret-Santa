@@ -15,14 +15,9 @@ const Flashcards: React.FC<FlashcardsProps> = ({ onComplete }) => {
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
-        // Safe access to API Key using process.env as per requirements
-        const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : undefined;
+        // Accessing API Key exactly as required by guidelines
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
         
-        if (!apiKey) {
-          throw new Error("API Key not found in environment");
-        }
-
-        const ai = new GoogleGenAI({ apiKey });
         const response = await ai.models.generateContent({
           model: 'gemini-3-flash-preview',
           contents: "Generate 5 interesting Christmas trivia flashcards. Each should have a 'front' (the topic/item) and a 'back' (a cool fact).",
@@ -52,7 +47,7 @@ const Flashcards: React.FC<FlashcardsProps> = ({ onComplete }) => {
         }
       } catch (error) {
         console.error("Flashcards fallback triggered:", error);
-        // Robust fallback data if API is unavailable
+        // Robust fallback data if API is unavailable or environment is still being set up
         setCards([
           { id: 1, front: "Reindeer", back: "Reindeer are the only deer species where both males and females grow antlers." },
           { id: 2, front: "Christmas Trees", back: "The first artificial Christmas trees were made in Germany using goose feathers dyed green." },
