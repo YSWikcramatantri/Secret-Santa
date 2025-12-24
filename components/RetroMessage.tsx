@@ -57,9 +57,7 @@ const RetroMessage: React.FC = () => {
       </div>
       
       <div className="max-w-xl w-full relative z-10 flex flex-col items-center">
-        <h1 className="text-xl sm:text-3xl mb-8 sm:mb-12 text-green-500 pixel-font animate-pulse tracking-tighter">
-          MISSION ACCOMPLISHED
-        </h1>
+        {/* Removed MISSION ACCOMPLISHED header */}
         
         <div className="w-full bg-slate-900/40 p-6 sm:p-10 rounded-lg border border-white/10 shadow-inner">
           {/* Letter Body */}

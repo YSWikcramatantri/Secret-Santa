@@ -19,6 +19,17 @@ export interface Entity {
   variant: string;
 }
 
+export interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  color: string;
+  size: number;
+  text?: string;
+}
+
 export interface GameState {
   score: number;
   lives: number;
@@ -29,7 +40,6 @@ export interface GameState {
   santaY: number;
 }
 
-// Fix: Added missing Flashcard interface used by the flashcards component
 export interface Flashcard {
   id: number;
   front: string;
